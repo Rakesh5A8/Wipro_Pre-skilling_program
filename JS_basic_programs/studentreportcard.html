@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    
+    
+    <!-- Automate the report card to generate for students based on their marks in 3 subjects
+    Each Data is stored as an object and the entire class is an array of students.
+    1. add data type validation (where marks must be numbers or float not strings )
+    2. Validate the name as string
+    3. skip the invalid records or show warnings
+    4. compute and display the report with extra functionality like scholarship or allowance for high grade  -->
+    
+    <script>
+        let students = [
+    
+        { name: "Alice Smith", marks: [95, 88, 92] },       // Valid
+        { name: "Bob Johnson", marks: [65, 72, 58] },       // Valid
+        { name: "", marks: [45, 67, 78] },                  // Invalid Name (Empty)
+        { name: "Charlie Brown", marks: [45, "67", 78] },   // Invalid Marks (One mark is a string)
+        { name: 234, marks: [45, 67, 78] }
+        ]
+
+        function isValidStudent(student)
+        {
+            if(typeof student.name != "string"){
+                console.warn("Invalid name entered : " + student);
+            }
+            if (typeof mark !== "number" || isNaN(mark)) {
+                console.warn("Invalid mark entered for " + student.name + ": " + mark);
+            }
+
+        }
+
+    //validation for marks 
+
+    function calculateAverage(marks){
+        const total = marks.reduce((sum, m) => sum + m, 0);
+        return total / marks.length;
+    }
+
+
+    
+    function getGrade(avg){
+        if (avg >= 90) return "A";
+        if (avg >= 80) return "B";
+        if (avg >= 70) return "C";
+        if (avg >= 60) return "D";
+        return "F";
+    }
+
+
+    function calculateTotalScholarship(grade){
+        switch (grade) {
+            case "A":
+                return 1000; 
+            case "B":
+                return 500;  
+            case "C":
+                return 200;  
+            default:
+                return 0;    
+        }
+    }
+
+
+
+    function generateReport(students)
+    {
+        console.log("Student Report Card:");
+        for (let student of students) {
+            if (!isValidStudent(student)) {
+                console.log("Skipping invalid record:" +student.name);
+                continue;
+            }
+        }
+        
+        const avg = calculateAverage(student.marks);
+        const grade = getGrade(avg);
+        const scholarship = calculateTotalScholarship(grade);
+
+        document.write("Name: "+ student.name);
+        document.write("Marks: " + student.marks.join(", "));
+        document.write("Average: "+avg.toFixed(2));
+        document.write("Grade: "+grade);
+        document.write("Scholarship Awarded: " + scholarship);
+
+        console.log("-----------");
+    }
+    generateReport(students);
+
+    
+
+    </script>
+    
+
+    // <!-- <script>
+   
+    // const numberDivision = (a,b) => a/b;
+    
+    // let a1 = prompt("Enter value of a");
+    // let b1 = prompt ("Enter value of b");
+    // let result = numberDivision(a1 , b1);
+    // document.write("The value after division : " + result );
+    // </script> -->
+</body>
+</html>
