@@ -1,0 +1,5 @@
+package com.myfinbank.customer.entity;
+
+public class FixedDeposit {
+
+}

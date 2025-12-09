@@ -1,0 +1,37 @@
+package com.myfinbank.admin.controller.api;
+
+import com.myfinbank.admin.dto.CustomerDto;
+import com.myfinbank.admin.feign.CustomerClient;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/admin/customers")
+@RequiredArgsConstructor
+public class AdminCustomerApiController {
+
+	private final CustomerClient customerClient;
+
+    @GetMapping
+    public List<CustomerDto> getAllCustomers() {
+        return customerClient.getAllCustomers();
+    }
+
+//    @GetMapping("/{id}")
+//    public CustomerDto getCustomerById(@PathVariable Long id) {
+//        return customerClient.getCustomerById(id);
+//    }
+//
+//    @PutMapping("/{id}/activate")
+//    public String activateCustomer(@PathVariable Long id) {
+//        return customerClient.activateCustomer(id);
+//    }
+//
+//    @PutMapping("/{id}/deactivate")
+//    public String deactivateCustomer(@PathVariable Long id) {
+//        return customerClient.deactivateCustomer(id);
+//    }
+}

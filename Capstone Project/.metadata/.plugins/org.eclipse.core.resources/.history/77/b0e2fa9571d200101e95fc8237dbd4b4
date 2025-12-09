@@ -1,0 +1,61 @@
+//package com.myfinbank.customer.controller;
+//
+//
+//import com.myfinbank.customer.dto.LoanDto;
+//import com.myfinbank.customer.entity.Loan;
+//import com.myfinbank.customer.repository.LoanRepository;
+//import lombok.RequiredArgsConstructor;
+//import org.springframework.web.bind.annotation.*;
+//
+//import java.util.List;
+//
+//@RestController
+//@RequestMapping("/api/loans")
+//@RequiredArgsConstructor
+//public class LoanApiController {
+//
+//    private final LoanRepository loanRepository;
+//
+//    // CUSTOMER: Apply Loan
+//    @PostMapping("/apply")
+//    public Loan applyLoan(@RequestBody LoanDto dto) {
+//        Loan loan = Loan.builder()
+//                .customerId(dto.getCustomerId())
+//                .loanType(dto.getLoanType())
+//                .amount(dto.getAmount())
+//                .annualInterestRate(dto.getAnnualInterestRate())
+//                .months(dto.getMonths())
+//                .emi(dto.getEmi())  // if you calculate EMI in UI/server
+//                .status("APPLIED")
+//                .appliedAt(java.time.LocalDateTime.now())
+//                .build();
+//
+//        return loanRepository.save(loan);
+//    }
+//
+//    // ADMIN: Get all loans
+//    @GetMapping
+//    public List<Loan> getAllLoans() {
+//        return loanRepository.findAll();
+//    }
+//
+//    // ADMIN: Approve Loan
+//    @PutMapping("/{id}/approve")
+//    public Loan approveLoan(@PathVariable Long id) {
+//        Loan loan = loanRepository.findById(id)
+//                .orElseThrow(() -> new RuntimeException("Loan not found"));
+//
+//        loan.setStatus("APPROVED");
+//        return loanRepository.save(loan);
+//    }
+//
+//    // ADMIN: Reject Loan
+//    @PutMapping("/{id}/reject")
+//    public Loan rejectLoan(@PathVariable Long id) {
+//        Loan loan = loanRepository.findById(id)
+//                .orElseThrow(() -> new RuntimeException("Loan not found"));
+//
+//        loan.setStatus("DENIED");
+//        return loanRepository.save(loan);
+//    }
+//}

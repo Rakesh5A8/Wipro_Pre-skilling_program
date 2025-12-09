@@ -1,0 +1,89 @@
+package com.myfinbank.customer.controller;
+
+import com.myfinbank.customer.entity.Customer;
+import com.myfinbank.customer.service.CustomerService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+@Controller
+@RequestMapping("/customer") // Base path for customer UI pages
+public class CustomerController {
+
+    @Autowired
+    private CustomerService customerService;
+
+    // Show Login Form
+    @GetMapping("/login")
+    public String showLoginForm(Model model) {
+        if (!model.containsAttribute("customer")) {
+            model.addAttribute("customer", new Customer());
+        }
+        // Looks for: src/main/resources/templates/login.html
+        return "login"; 
+    }
+
+    // Process Login Form Submission
+    @PostMapping("/login")
+    public String processLogin(@ModelAttribute Customer customer, RedirectAttributes redirectAttributes) {
+        try {
+            customerService.loginCustomer(customer.getUsername(), customer.getPassword());
+            // Success: Redirect to the customer dashboard
+            return "redirect:/dashboard";
+        } catch (RuntimeException e) {
+            // Failure: Add error message and redirect back to login
+            redirectAttributes.addFlashAttribute("error", "Login failed: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("customer", customer); // Keep old form data
+            return "redirect:/login";
+        }
+    }
+
+    // Show Registration Form
+    @GetMapping("/register")
+    public String showRegisterForm(Model model) {
+        if (!model.containsAttribute("customer")) {
+            model.addAttribute("customer", new Customer());
+        }
+        // Looks for: src/main/resources/templates/register.html
+        return "register"; 
+    }
+
+    // Process Registration Form Submission
+    @PostMapping("/register")
+    public String processRegister(@ModelAttribute Customer customer, RedirectAttributes redirectAttributes) {
+        try {
+            customerService.registerCustomer(customer);
+            redirectAttributes.addFlashAttribute("success", "Registration successful! Please log in.");
+            return "redirect:/login";
+        } catch (IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("error", "Registration failed: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("customer", customer); // Keep old form data
+            return "redirect:/register";
+        }
+    }
+
+    // Logout
+    @GetMapping("/logout")
+    public String logout(RedirectAttributes redirectAttributes) {
+        customerService.logoutCustomer();
+        redirectAttributes.addFlashAttribute("success", "You have been logged out.");
+        return "redirect:/login";
+    }
+    
+    // Simple Placeholder Dashboard
+    @GetMapping("/dashboard")
+    public String dashboard(Model model) {
+        String loggedInCustomer = customerService.getLoggedInCustomer();
+        if (loggedInCustomer == null) {
+            return "redirect:/login"; // Redirect if not logged in
+        }
+        model.addAttribute("username", loggedInCustomer);
+        // Looks for: src/main/resources/templates/dashboard.html
+        return "dashboard";
+    }
+}

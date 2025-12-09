@@ -1,0 +1,8 @@
+package com.myfinbank.admin.service;
+
+import com.myfinbank.admin.entity.Admin;
+
+public interface AdminService {
+    Admin register(Admin admin);
+    Admin login(String username, String password);
+}

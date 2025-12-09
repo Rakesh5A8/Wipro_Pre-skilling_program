@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Admin Dashboard - MyFinBank</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background:#f3f3ff;
+            margin:0;
+            padding:40px 0;
+        }
+
+        .box {
+            background:white;
+            width:450px;
+            padding:30px;
+            margin:0 auto;
+            text-align:center;
+            border-radius:10px;
+            box-shadow:0 4px 12px rgba(0,0,0,0.2);
+            border-top:5px solid #6f42c1;
+        }
+
+        h1 { color:#6f42c1; }
+
+        a {
+            display:inline-block;
+            padding:10px 20px;
+            margin:5px;
+            background:#28a745;
+            color:white;
+            border-radius:6px;
+            text-decoration:none;
+        }
+
+        a:hover { background:#1e7e34; }
+
+        .logout {
+            background:#dc3545 !important;
+        }
+
+        .logout:hover {
+            background:#c82333 !important;
+        }
+
+        /* Footer Styling */
+        footer {
+            text-align: center;
+            padding: 12px;
+            font-size: 15px;
+            color: #555;
+            margin-top: 50px;
+            border-top: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+
+<div class="box">
+    <h1>Admin Dashboard</h1>
+    <p>Welcome, <strong th:text="${username}">Admin</strong></p>
+
+    <!-- Customer Management -->
+    <a href="/admin/customers">Manage Customers</a>
+
+    <!-- Loan Requests -->
+    <a href="/admin/loans">Loan Requests</a>
+
+    <!-- Logout -->
+    <br>
+    <a class="logout" th:href="@{/admin/logout}">Logout</a>
+</div>
+
+<footer>
+    <p>&copy; 2025 MyFinBank — All Rights Reserved</p>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,77 @@
+package com.myfinbank.customer.controller;
+
+
+import com.myfinbank.customer.dto.CustomerDto;
+import com.myfinbank.customer.entity.Customer;
+import com.myfinbank.customer.repository.CustomerRepository;
+import lombok.RequiredArgsConstructor;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+/**
+ * Public REST API used by Admin microservice (via Feign).
+ * Make sure /api/customers/** is permitted in SecurityConfig (we already allowed it).
+ */
+
+@RestController
+@RequestMapping("/api/customers")
+@RequiredArgsConstructor
+public class CustomerApiController {
+
+    private final CustomerRepository customerRepository;
+
+    @GetMapping
+    public List<CustomerDto> getAllCustomers() {
+    	return customerRepository.findAll()
+                .stream()
+                .map(CustomerDto::fromEntity)
+                .collect(Collectors.toList());
+    }
+
+    // VIEW single customer
+    @GetMapping("/{id}")
+    public ResponseEntity<CustomerDto> getCustomerById(@PathVariable Long id) {
+        return customerRepository.findById(id)
+                .map(c -> ResponseEntity.ok(CustomerDto.fromEntity(c)))
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    // UPDATE customer (firstName, lastName, email, username optional)
+    @PutMapping("/{id}")
+    public ResponseEntity<CustomerDto> updateCustomer(@PathVariable Long id,
+                                                      @RequestBody CustomerDto dto) {
+        return customerRepository.findById(id).map(c -> {
+            c.setFirstName(dto.getFirstName());
+            c.setLastName(dto.getLastName());
+            if (dto.getEmail() != null) c.setEmail(dto.getEmail());
+            if (dto.getUsername() != null) c.setUsername(dto.getUsername());
+            // do NOT update password here (separate flow)
+            customerRepository.save(c);
+            return ResponseEntity.ok(CustomerDto.fromEntity(c));
+        }).orElse(ResponseEntity.notFound().build());
+    }
+
+    // DEACTIVATE customer
+    @PutMapping("/{id}/deactivate")
+    public ResponseEntity<CustomerDto> deactivateCustomer(@PathVariable Long id) {
+        return customerRepository.findById(id).map(c -> {
+            c.setActive(false);
+            customerRepository.save(c);
+            return ResponseEntity.ok(CustomerDto.fromEntity(c));
+        }).orElse(ResponseEntity.notFound().build());
+    }
+
+    // ACTIVATE customer
+    @PutMapping("/{id}/activate")
+    public ResponseEntity<CustomerDto> activateCustomer(@PathVariable Long id) {
+        return customerRepository.findById(id).map(c -> {
+            c.setActive(true);
+            customerRepository.save(c);
+            return ResponseEntity.ok(CustomerDto.fromEntity(c));
+        }).orElse(ResponseEntity.notFound().build());
+    }
+}

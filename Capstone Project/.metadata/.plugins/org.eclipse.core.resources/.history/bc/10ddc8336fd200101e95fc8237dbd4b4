@@ -1,0 +1,46 @@
+package com.myfinbank.admin.controller.api;
+
+import com.myfinbank.admin.dto.CustomerDto;
+import com.myfinbank.admin.feign.CustomerClient;
+
+import lombok.RequiredArgsConstructor;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+//These run under AdminMicroservice 
+@RestController
+@RequestMapping("/api/admin/customers")
+@RequiredArgsConstructor
+public class AdminCustomerApiController {
+
+	private final CustomerClient customerClient;
+
+    @GetMapping
+    public List<CustomerDto> getAllCustomers() {
+        return customerClient.getAllCustomers();
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<CustomerDto> getCustomer(@PathVariable Long id) {
+        CustomerDto dto = customerClient.getCustomerById(id);
+        return dto != null ? ResponseEntity.ok(dto) : ResponseEntity.notFound().build();
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<CustomerDto> updateCustomer(@PathVariable Long id, @RequestBody CustomerDto dto) {
+        CustomerDto updated = customerClient.updateCustomer(id, dto);
+        return ResponseEntity.ok(updated);
+    }
+
+    @PutMapping("/{id}/deactivate")
+    public ResponseEntity<CustomerDto> deactivate(@PathVariable Long id) {
+        return ResponseEntity.ok(customerClient.deactivateCustomer(id));
+    }
+
+    @PutMapping("/{id}/activate")
+    public ResponseEntity<CustomerDto> activate(@PathVariable Long id) {
+        return ResponseEntity.ok(customerClient.activateCustomer(id));
+    }
+}

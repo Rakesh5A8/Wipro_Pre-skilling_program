@@ -1,0 +1,86 @@
+package com.myfinbank.admin.controller;
+
+import com.myfinbank.admin.entity.Admin;
+import com.myfinbank.admin.service.AdminService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+@Controller
+@RequestMapping("/admin") // Base path for admin UI pages
+public class AdminController {
+
+    @Autowired
+    private AdminService adminService;
+
+    // Show Login Form
+    @GetMapping("/login")
+    public String showLoginForm(Model model) {
+        if (!model.containsAttribute("admin")) {
+            model.addAttribute("admin", new Admin());
+        }
+        return "admin/login"; // Looks for: src/main/resources/templates/admin/login.html
+    }
+
+    // Process Login Form Submission
+    @PostMapping("/login")
+    public String processLogin(@ModelAttribute Admin admin, RedirectAttributes redirectAttributes) {
+        try {
+            adminService.loginAdmin(admin.getUsername(), admin.getPassword());
+            // Success: Redirect to the admin dashboard
+            return "redirect:/admin/dashboard";
+        } catch (RuntimeException e) {
+            // Failure: Add error message and redirect back to login
+            redirectAttributes.addFlashAttribute("error", "Login failed: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("admin", admin); // Keep old form data
+            return "redirect:/admin/login";
+        }
+    }
+
+    // Show Registration Form
+    @GetMapping("/register")
+    public String showRegisterForm(Model model) {
+        if (!model.containsAttribute("admin")) {
+            model.addAttribute("admin", new Admin());
+        }
+        return "admin/register"; // Looks for: src/main/resources/templates/admin/register.html
+    }
+
+    // Process Registration Form Submission
+    @PostMapping("/register")
+    public String processRegister(@ModelAttribute Admin admin, RedirectAttributes redirectAttributes) {
+        try {
+            adminService.registerAdmin(admin);
+            redirectAttributes.addFlashAttribute("success", "Admin Registration successful! Please log in.");
+            return "redirect:/admin/login";
+        } catch (IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("error", "Registration failed: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("admin", admin); // Keep old form data
+            return "redirect:/admin/register";
+        }
+    }
+
+    // Logout
+    @GetMapping("/logout")
+    public String logout(RedirectAttributes redirectAttributes) {
+        adminService.logoutAdmin();
+        redirectAttributes.addFlashAttribute("success", "You have been logged out.");
+        return "redirect:/admin/login";
+    }
+    
+    // Simple Placeholder Dashboard
+    @GetMapping("/dashboard")
+    public String dashboard(Model model) {
+        String loggedInAdmin = adminService.getLoggedInAdmin();
+        if (loggedInAdmin == null) {
+            return "redirect:/admin/login"; // Redirect if not logged in
+        }
+        model.addAttribute("username", loggedInAdmin);
+        return "admin/dashboard";
+    }
+}

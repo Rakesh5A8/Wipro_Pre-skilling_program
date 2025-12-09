@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Admin Dashboard - MyFinBank</title>
+<style>
+        body { 
+            font-family: Arial, sans-serif; 
+            background-color: #f4f4f4; /* Light background */
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+            margin: 0; 
+        }
+        .container { 
+            background-color: #ffffff; 
+            padding: 30px; 
+            border-radius: 5px; 
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
+            width: 100%;
+            max-width: 350px; 
+            text-align: center; 
+        }
+        h1 { 
+            color: #333; 
+            margin-bottom: 25px; 
+            font-size: 24px; 
+        }
+        input[type="text"], input[type="password"] { 
+            width: 100%; 
+            padding: 10px; 
+            margin-bottom: 15px; 
+            border: 1px solid #ccc; 
+            border-radius: 3px; 
+            box-sizing: border-box; 
+            font-size: 16px;
+        }
+        button { 
+            background-color: #5cb85c; /* Simple Green Button */
+            color: white; 
+            padding: 10px 15px; 
+            border: none; 
+            border-radius: 3px; 
+            cursor: pointer; 
+            font-size: 16px; 
+            width: 100%; 
+            transition: background-color 0.3s;
+        }
+        button:hover { 
+            background-color: #4cae4c; 
+        }
+        .message { 
+            padding: 10px; 
+            border-radius: 3px; 
+            margin-bottom: 15px; 
+            font-weight: bold; 
+            text-align: left;
+        }
+        .error { 
+            background-color: #f2dede; 
+            color: #a94442; 
+            border: 1px solid #ebccd1; 
+        }
+        .link-text { 
+            margin-top: 20px; 
+            font-size: 14px; 
+        }
+        .link-text a { 
+            color: #337ab7; 
+            text-decoration: none; 
+        }
+        .link-text a:hover { 
+            text-decoration: underline; 
+        }
+    </style>
+</head>
+<body>
+	<div class="dashboard">
+        <h1>Admin Portal</h1>
+        <p>Welcome back, <span th:text="${username}">Admin!</span></p>
+        
+        <div class="btn-group">
+            <a href="#">Manage Customers</a>
+            <a href="#">Process Loans</a>
+        </div>
+        
+        <a th:href="@{/admin/logout}" class="btn-group logout-btn">Logout</a>
+        
+    </div>
+
+</body>
+</html>

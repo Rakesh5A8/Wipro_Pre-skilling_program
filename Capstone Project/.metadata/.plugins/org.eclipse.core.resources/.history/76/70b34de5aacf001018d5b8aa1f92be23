@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Customer Dashboard - MyFinBank</title>
+<style>
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f4f7f6;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    min-height: 100vh;
+}
+
+.sidebar {
+    width: 250px;
+    background-color: #007bff;
+    color: white;
+    padding-top: 20px;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar h2 {
+    text-align: center;
+    margin-bottom: 30px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    padding-bottom: 15px;
+    font-weight: 300;
+}
+
+.sidebar a {
+    display: block;
+    padding: 15px 20px;
+    text-decoration: none;
+    color: #cce0ff;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.sidebar a:hover, .sidebar a.active {
+    background-color: #0056b3;
+    color: white;
+    border-left: 5px solid white;
+    padding-left: 15px;
+}
+
+.main-content {
+    flex-grow: 1;
+    padding: 40px;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 40px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.header h1 {
+    color: #343a40;
+    font-size: 30px;
+    font-weight: 400;
+}
+
+.logout-btn {
+    background-color: #dc3545;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    text-decoration: none;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+
+.logout-btn:hover {
+    background-color: #c82333;
+}
+
+.card {
+    background-color: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.card h3 {
+    color: #007bff;
+    margin-top: 0;
+}
+</style>
+
+</head>
+<body>
+	<div class="sidebar">
+        <h2>MyFinBank Customer</h2>
+        <a th:href="@{/customer/dashboard}" class="active">Dashboard</a>
+        <a href="#">Accounts (Sprint II)</a>
+        <a href="#">Transfers (Sprint II)</a>
+        <a th:href="@{/customer/logout}">Logout</a>
+    </div>
+
+    <div class="main-content">
+        <div class="header">
+            <h1>Hello, <span th:text="${session.customerUsername}"></span>!</h1>
+            <a th:href="@{/customer/logout}" class="logout-btn">Logout</a>
+        </div>
+        
+        <div class="card">
+            <h3>Sprint I Status</h3>
+            <p th:text="${message}">Welcome to your Customer Dashboard!</p>
+            <p><strong>Next Steps:</strong> In Sprint II, I will start building out core banking functionality.</p>
+        </div>
+
+    </div>
+
+
+</body>
+</html>

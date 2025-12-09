@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Customer Dashboard - MyFinBank</title>
+<style>
+        body { 
+            font-family: Arial, sans-serif; 
+            background-color: #e6e6fa; /* Light Purple background */
+            margin: 0; 
+            padding: 0;
+            min-height: 100vh;
+        }
+        .navbar {
+            background-color: #0056b3; /* Primary Blue */
+            padding: 10px 20px;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .navbar h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            background-color: #dc3545; /* Red for logout */
+            transition: background-color 0.3s;
+        }
+        .navbar a:hover {
+            background-color: #c82333;
+        }
+        .dashboard-content {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            color: #0056b3;
+            font-size: 28px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #ccc;
+            padding-bottom: 10px;
+        }
+        .welcome-message {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 30px;
+        }
+        .card-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+        .card {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 6px;
+            border-left: 5px solid #28a745; /* Green Accent */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        .card h3 {
+            margin-top: 0;
+            color: #28a745;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1>MyFinBank Customer Portal</h1>
+        <div>
+            <span style="margin-right: 15px;">Welcome, <strong th:text="${username}">Customer</strong>!</span>
+            <a th:href="@{/logout}">Logout</a>
+        </div>
+    </div>
+    
+    <div class="dashboard-content">
+        <h2>Customer Dashboard</h2>
+        
+        <p class="welcome-message">
+            This is your secure banking overview. In future Sprints, you will manage accounts and transactions here.
+        </p>
+
+        <div class="card-container">
+            <div class="card">
+                <h3>Account Summary</h3>
+                <p>Current Balance: <strong>$XX,XXX.XX</strong></p>
+                <p>Account Status: Active</p>
+            </div>
+            <div class="card">
+                <h3>Quick Links</h3>
+                <p><a href="#" style="color:#0056b3; text-decoration: underline;">Transfer Funds</a></p>
+                <p><a href="#" style="color:#0056b3; text-decoration: underline;">View Statements</a></p>
+            </div>
+            <div class="card">
+                <h3>Sprint Status</h3>
+                <p>Customer Login/Register functionality is ready!</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,18 @@
+package com.myfinbank.customer.service;
+
+import java.math.BigDecimal;
+
+import com.myfinbank.customer.entity.Customer;
+
+public interface CustomerService {
+	void register(Customer customer);
+
+    Customer validateLogin(String username, String password);
+
+    boolean existsByUsername(String username);
+    
+ // ---------- NEW ----------
+    Customer deposit(Long customerId, BigDecimal amount);
+    Customer findById(Long id);
+    Customer withdraw(Long customerId, BigDecimal amount);
+}

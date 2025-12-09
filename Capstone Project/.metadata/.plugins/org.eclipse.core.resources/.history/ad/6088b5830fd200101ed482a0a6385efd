@@ -1,0 +1,20 @@
+package com.myfinbank.customer.controller;
+
+
+import com.myfinbank.customer.entity.Customer;
+import com.myfinbank.customer.repository.CustomerRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/api/customers") // Base URL for all APIs
+@RequiredArgsConstructor
+public class CustomerApiController {
+
+    private final CustomerRepository customerRepository;
+
+    @GetMapping("/{id}")
+    public Customer getCustomerById(@PathVariable Long id) {
+        return customerRepository.findById(id).orElse(null);
+    }
+}

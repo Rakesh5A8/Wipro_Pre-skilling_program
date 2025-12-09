@@ -1,0 +1,67 @@
+package com.myfinbank.customer.controller;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+
+import com.myfinbank.customer.entity.Customer;
+import com.myfinbank.customer.service.CustomerService;
+
+import jakarta.servlet.http.HttpSession;
+import lombok.RequiredArgsConstructor;
+
+@Controller
+@RequiredArgsConstructor
+public class CustomerController {
+
+    private final CustomerService service;
+
+    @GetMapping("/register")
+    public String showRegisterForm(Model model) {
+        model.addAttribute("customer", new Customer());
+        return "customer/register";
+    }
+
+    @PostMapping("/register")
+    public String register(@ModelAttribute Customer customer, Model model) {
+        service.register(customer);
+        model.addAttribute("success", "Account created successfully!");
+        return "customer/login";
+    }
+
+    @GetMapping("/login")
+    public String loginPage(Model model) {
+        model.addAttribute("customer", new Customer());
+        return "customer/login";
+    }
+
+    @PostMapping("/login")
+    public String login(@ModelAttribute Customer customer, HttpSession session, Model model) {
+        Customer loggedIn = service.login(customer.getUsername(), customer.getPassword());
+
+        if (loggedIn == null) {
+            model.addAttribute("error", "Invalid credentials!");
+            return "customer/login";
+        }
+
+        session.setAttribute("username", loggedIn.getUsername());
+        return "customer/dashboard";
+    }
+
+    @GetMapping("/logout")
+    public String logout(HttpSession session, Model model) {
+        session.invalidate();
+        model.addAttribute("customer", new Customer());
+        model.addAttribute("success", "Logged out successfully!");
+        return "customer/login";
+    }
+    @GetMapping("/dashboard")
+    public String dashboard(HttpSession session) {
+        if (session.getAttribute("customer") == null) {
+            return "redirect:/login";
+        }
+        return "customer/dashboard";
+    }
+}

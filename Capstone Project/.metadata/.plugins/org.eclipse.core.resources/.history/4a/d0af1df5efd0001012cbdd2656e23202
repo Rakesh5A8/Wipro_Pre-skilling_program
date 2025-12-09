@@ -1,0 +1,39 @@
+package com.myfinbank.customer.entity;
+
+
+import jakarta.persistence.*;
+import lombok.*;
+import java.time.LocalDateTime;
+import java.math.BigDecimal;
+
+@Entity
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class Transaction {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    //unique id for every transaction
+    @Column(nullable = false, unique = true)
+    private String transactionId; // UUID string
+
+    // who paid (customer.id) - nullable for pure deposits (bank -> customer)
+    private Long fromCustomerId;
+
+    // who received (customer.id) - nullable for pure withdraws (customer -> bank)
+    private Long toCustomerId;
+
+    @Column(precision = 15, scale = 2, nullable = false)
+    private BigDecimal amount;
+
+    // "DEPOSIT", "WITHDRAW", "TRANSFER", "INVEST"
+    private String type;
+
+    private String description;
+
+    private LocalDateTime createdAt;
+}

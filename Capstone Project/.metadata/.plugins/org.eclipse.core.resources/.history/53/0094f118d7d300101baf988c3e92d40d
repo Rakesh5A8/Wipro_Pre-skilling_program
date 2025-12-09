@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>EMI Calculator</title></head>
+<style>
+footer {
+            margin-top: 25px;
+            font-size: 14px;
+            color: #333;}
+</style>
+<body>
+<h2>EMI Calculator</h2>
+
+<div th:if="${error}" style="color:red" th:text="${error}"></div>
+<div th:if="${emi}" style="color:green">EMI: <span th:text="${emi}"></span></div>
+
+<form method="post" th:action="@{/calculate-emi}">
+    <label>Amount</label><input name="amount" required />
+    <label>Annual Rate (%)</label><input name="rate" required />
+    <label>Months</label><input name="months" required />
+    <button type="submit">Calculate</button>
+</form>
+
+<p><a th:href="@{/dashboard}">Back</a></p>
+<footer>
+    <p>&copy; 2025 MyFinBank — All Rights Reserved</p>
+</footer>
+</body>
+</html>

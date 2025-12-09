@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Customer Dashboard - MyFinBank</title>
+    <style>
+        body { font-family: Arial; background:#e6e6fa;
+               margin:0; padding:0; }
+               
+       	body * { position: relative; z-index: 1; }
+        .navbar {
+            background:#0056b3; padding:15px;
+            color:white; display:flex; justify-content:space-between;
+        }
+        .navbar a {
+            background:#dc3545; padding:8px 15px;
+            color:white; border-radius:4px; text-decoration:none;
+        }
+        .navbar a:hover { background:#c82333; }
+        .container {
+            margin:40px auto; width:900px; background:white;
+            padding:30px; border-radius:8px;
+            box-shadow:0 4px 12px rgba(0,0,0,0.1);
+        }
+        h2 { color:#0056b3; border-bottom:2px solid #ddd; padding-bottom:10px; }
+        .box {
+            background:#f9f9f9; padding:20px;
+            border-left:5px solid #28a745; margin-bottom:20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="navbar">
+    <strong>MyFinBank Customer Portal</strong>
+    <span>
+        Welcome, <strong th:text="${username}">User</strong>
+        <a th:href="@{/logout}">Logout</a>
+    </span>
+</div>
+
+<div class="container">
+    <h2>Dashboard</h2>
+
+    <div class="box">
+        <h3>Account Summary</h3>
+        <p>Balance: <b th:text="${customerBalance}">0.00</b></p>
+        <p>Status: Active</p>
+    </div>
+
+    <div class="box">
+    <h3>Quick Actions</h3>
+
+    <p><a th:href="@{/deposit}">➕ Deposit Money</a></p>
+    <p><a th:href="@{/withdraw}">➖ Withdraw Money</a></p>
+    <p><a th:href="@{/transfer}">🔁 Transfer Money</a></p>
+    <p><a th:href="@{/apply-loan}">🏦 Apply Loan</a></p>
+    <p><a th:href="@{/calculate-emi}">📊 Calculate EMI</a></p>
+    <p><a th:href="@{/transfer-investment}">Transfer to Loan / FD / RD</a></p>
+    
+</div>
+
+
+</div>
+<script>
+//
+document.addEventListener("DOMContentLoaded", function() {
+
+    const username = sessionStorage.getItem("username");
+    const password = sessionStorage.getItem("password");
+
+    if (!username || !password) {
+        console.warn("Username/password not found in sessionStorage");
+        return;
+    }
+
+    // Fetch JWT from backend
+    fetch(`/api/get-token?username=${username}&password=${password}`)
+        .then(res => res.text())
+        .then(token => {
+            console.log("JWT Token:", token);
+            sessionStorage.setItem("jwtToken", token);
+        })
+        .catch(err => console.error("Error fetching token:", err));
+});
+</script>
+
+
+</body>
+
+
+
+</html>

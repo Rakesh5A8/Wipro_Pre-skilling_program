@@ -1,0 +1,42 @@
+package com.myfinbank.customer.controller;
+
+import com.myfinbank.customer.entity.Loan;
+import com.myfinbank.customer.repository.LoanRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/customers/loans")
+@RequiredArgsConstructor
+public class LoanApiController {
+
+    private final LoanRepository loanRepository;
+
+    // ADMIN: Get all loan requests
+    @GetMapping
+    public List<Loan> getAllLoans() {
+        return loanRepository.findAll();
+    }
+
+    // ADMIN: Approve loan
+    @PutMapping("/{id}/approve")
+    public Loan approveLoan(@PathVariable Long id) {
+        Loan loan = loanRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Loan not found"));
+
+        loan.setStatus("APPROVED");
+        return loanRepository.save(loan);
+    }
+
+    // ADMIN: Reject loan
+    @PutMapping("/{id}/reject")
+    public Loan rejectLoan(@PathVariable Long id) {
+        Loan loan = loanRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Loan not found"));
+
+        loan.setStatus("DENIED");
+        return loanRepository.save(loan);
+    }
+}

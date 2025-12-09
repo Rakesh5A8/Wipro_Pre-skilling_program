@@ -1,0 +1,24 @@
+package com.myfinbank.admin.feign;
+
+
+import com.myfinbank.admin.dto.CustomerDTO;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@FeignClient(name = "customer-service")
+public interface CustomerClient {
+
+    @GetMapping("/api/customers")
+    List<CustomerDTO> getAllCustomers();
+
+    @GetMapping("/api/customers/{id}")
+    CustomerDTO getCustomerById(@PathVariable Long id);
+
+    @PutMapping("/api/customers/{id}/activate")
+    String activateCustomer(@PathVariable Long id);
+
+    @PutMapping("/api/customers/{id}/deactivate")
+    String deactivateCustomer(@PathVariable Long id);
+}

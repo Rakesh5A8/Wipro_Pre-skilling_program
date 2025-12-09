@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Admin Dashboard - MyFinBank</title>
+<style>
+     body {
+         font-family: Arial, sans-serif;
+         background-color: #e6e6fa; display: flex; 
+         justify-content: center; align-items: center; height: 100vh; margin: 0; 
+     }
+     .dashboard { 
+     	background-color: #ffffff; padding: 40px; border-radius: 12px; 
+     	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); 
+     	width: 500px; text-align: center; border-top: 5px solid #6f42c1; 
+     	}
+     h1 { 
+     	color: #6f42c1; margin-bottom: 10px; font-size: 28px; 
+     	}
+      p { 
+     	color: #333; font-size: 18px; margin-bottom: 30px; 
+     	}
+     .btn-group a { 
+     	background-color: #28a745; color: white; 
+     	padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; 
+     	font-size: 16px; text-decoration: none; margin: 5px; display: inline-block; 
+     	transition: background-color 0.3s; }
+        .btn-group a:hover { background-color: #1e7e34; }
+        .logout-btn { background-color: #dc3545; color: white; margin-top: 20px; }
+        .logout-btn:hover { background-color: #c82333; }
+    </style>
+</head>
+<body>
+	<div class="dashboard">
+        <h1>Admin Portal</h1>
+        <p>Welcome back, <span th:text="${username}">Admin!</span></p>
+        
+        <div class="btn-group">
+            <a href="#">Manage Customers</a>
+            <a href="#">Process Loans</a>
+        </div>
+        
+        <a th:href="@{/admin/logout}" class="btn-group logout-btn">Logout</a>
+        
+    </div>
+
+</body>
+</html>

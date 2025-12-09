@@ -1,0 +1,5 @@
+package com.myfinbank.customer.controller;
+
+public class JwtController {
+
+}

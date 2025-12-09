@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Apply Loan</title></head>
+<body>
+<h2>Apply Loan</h2>
+
+<div th:if="${error}" style="color:red" th:text="${error}"></div>
+<div th:if="${success}" style="color:green" th:text="${success}"></div>
+
+<form method="post" th:action="@{/apply-loan}">
+    <label>Loan Type</label>
+    <input type="text" name="loanType" placeholder="PERSONAL" required />
+
+    <label>Amount</label>
+    <input type="text" name="amount" placeholder="10000.00" required />
+
+    <label>Annual Interest Rate (%)</label>
+    <input type="text" name="annualRate" placeholder="7.5" required />
+
+    <label>Months</label>
+    <input type="number" name="months" placeholder="12" required />
+
+    <button type="submit">Apply</button>
+</form>
+
+<p><a th:href="@{/dashboard}">Back</a></p>
+</body>
+</html>

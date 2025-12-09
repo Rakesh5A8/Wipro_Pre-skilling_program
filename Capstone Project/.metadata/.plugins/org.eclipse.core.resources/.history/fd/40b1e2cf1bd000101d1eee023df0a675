@@ -1,0 +1,8 @@
+package com.myfinbank.customer.service;
+
+import com.myfinbank.customer.entity.Customer;
+
+public interface CustomerService {
+    Customer register(Customer customer);
+    Customer login(String username, String password);
+}

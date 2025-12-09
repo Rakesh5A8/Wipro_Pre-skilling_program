@@ -1,0 +1,12 @@
+1764651237886	Rename package 'com.myfinbank.controller'
+1764651271655	Rename package 'com.myfinbank.entity'
+1764651292081	Rename package 'com.myfinbank.repository'
+1764651319394	Rename package 'com.myfinbank.service'
+1764667184079	Move 'admin-home.html' to 'admin'
+1764667192110	Move 'admin-register.html' to 'admin'
+1764667229834	Rename resource 'admin-home.html'
+1764667252170	Rename resource 'admin-register.html'
+1764951312839	Rename type 'dminCustomerApiController'
+1764958927994	Rename package 'com.myfinbank.admin.client'
+1764959058538	Rename type 'CustomerDTO'
+1765008104909	Delete element

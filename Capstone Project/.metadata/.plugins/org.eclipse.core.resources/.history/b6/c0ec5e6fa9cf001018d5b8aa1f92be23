@@ -1,0 +1,11 @@
+package com.myfinbank.customer.repository;
+
+import com.myfinbank.customer.entity.Customer;
+import org.springframework.data.jpa.repository.JpaRepository;
+import java.util.Optional;
+
+public interface CustomerRepository extends JpaRepository<Customer, Long> {
+
+    // Custom finder method used for login verification
+    Optional<Customer> findByUsername(String username);
+}

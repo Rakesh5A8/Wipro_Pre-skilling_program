@@ -1,0 +1,57 @@
+//package com.myfinbank.admin.controller.api;
+//
+//
+//import com.myfinbank.customer.entity.Loan;
+//import com.myfinbank.customer.repository.LoanRepository;
+//import lombok.RequiredArgsConstructor;
+//import org.springframework.web.bind.annotation.*;
+//
+//import java.util.List;
+//
+//@RestController
+//@RequestMapping("/api/admin/loans")
+//@RequiredArgsConstructor
+//public class AdminLoanApiController {
+//
+//    private final LoanRepository loanRepository;
+//
+//    // ---------------------------------------
+//    // GET ALL LOAN REQUESTS
+//    // ---------------------------------------
+//    @GetMapping
+//    public List<Loan> getAllLoans() {
+//        return loanRepository.findAll();
+//    }
+//
+//    // ---------------------------------------
+//    // APPROVE LOAN
+//    // ---------------------------------------
+//    @PutMapping("/{id}/approve")
+//    public String approveLoan(@PathVariable Long id) {
+//
+//        Loan loan = loanRepository.findById(id).orElse(null);
+//
+//        if (loan == null) return "Loan not found";
+//
+//        loan.setStatus("APPROVED");
+//        loanRepository.save(loan);
+//
+//        return "Loan approved";
+//    }
+//
+//    // ---------------------------------------
+//    // DENY LOAN
+//    // ---------------------------------------
+//    @PutMapping("/{id}/deny")
+//    public String denyLoan(@PathVariable Long id) {
+//
+//        Loan loan = loanRepository.findById(id).orElse(null);
+//
+//        if (loan == null) return "Loan not found";
+//
+//        loan.setStatus("DENIED");
+//        loanRepository.save(loan);
+//
+//        return "Loan denied";
+//    }
+//}

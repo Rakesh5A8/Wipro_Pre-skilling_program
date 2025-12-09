@@ -1,0 +1,48 @@
+package com.myfinbank.customer.service;
+
+import com.myfinbank.customer.entity.Customer;
+import com.myfinbank.customer.repository.CustomerRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+@Service
+public class CustomerService {
+
+    @Autowired
+    private CustomerRepository customerRepository;
+
+    // Simple state management for Sprint I without Spring Security
+    private String loggedInUser = null; 
+
+    public Customer registerCustomer(Customer customer) {
+        if (customerRepository.findByUsername(customer.getUsername()).isPresent()) {
+            throw new IllegalArgumentException("Username already exists.");
+        }
+        // Save the customer
+        return customerRepository.save(customer);
+    }
+
+    public Customer loginCustomer(String username, String password) {
+        Customer customer = customerRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Invalid username or password."));
+
+        if (!customer.getPassword().equals(password)) {
+            throw new RuntimeException("Invalid username or password.");
+        }
+        
+        // Set logged in user state
+        this.loggedInUser = username; 
+        return customer;
+    }
+
+    public void logoutCustomer() {
+        this.loggedInUser = null;
+    }
+
+    /**
+     * Returns the username of the currently "logged in" user for UI purposes.
+     */
+    public String getLoggedInUser() {
+        return this.loggedInUser;
+    }
+}

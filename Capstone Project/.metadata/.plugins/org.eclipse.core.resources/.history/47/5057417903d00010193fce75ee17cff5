@@ -1,0 +1,16 @@
+package com.myfinbank.admin.repository;
+
+import java.util.Optional;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.myfinbank.admin.entity.Admin;
+
+public interface AdminRepository extends JpaRepository<Admin, Long> {
+
+    // Method to find an Admin by username for login/security
+    Optional<Admin> findByUsername(String username);
+
+    // Method to find an Admin by email for security/uniqueness checks
+    Optional<Admin> findByEmail(String email);
+}

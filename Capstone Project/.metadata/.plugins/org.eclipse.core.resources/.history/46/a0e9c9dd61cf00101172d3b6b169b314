@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Admin Login - MyFinBank</title>
+</head>
+<body>
+	<div class="container">
+        <h1>Admin Login</h1>
+        
+        <!-- Error Message Display -->
+        <div th:if="${error}" class="message error" th:text="${error}">Login Error Message</div>
+        <!-- Success Message Display (e.g., after successful registration) -->
+        <div th:if="${success}" class="message success" th:text="${success}">Success Message</div>
+
+        <form method="POST" th:action="@{/admin/login}" th:object="${admin}">
+            <input type="text" th:field="*{username}" placeholder="Admin Username" required>
+            <input type="password" th:field="*{password}" placeholder="Password" required>
+            <button type="submit">Log In</button>
+        </form>
+        
+        <div class="link-text">
+            No account? <a th:href="@{/admin/register}">Register new Admin</a>
+        </div>
+    </div>
+
+</body>
+</html>

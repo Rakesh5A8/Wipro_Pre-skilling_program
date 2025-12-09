@@ -1,0 +1,40 @@
+package com.myfinbank.customer.service;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import com.myfinbank.customer.entity.Customer;
+import com.myfinbank.customer.repository.CustomerRepository;
+
+
+@Service
+public class CustomerServiceImpl implements CustomerService {
+
+    @Autowired
+    private CustomerRepository customerRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Override
+    public void register(Customer customer) {
+        customer.setPassword(passwordEncoder.encode(customer.getPassword()));
+        customerRepository.save(customer);
+    }
+
+    @Override
+    public Customer validateLogin(String username, String password) {
+        Customer customer = customerRepository.findByUsername(username);
+
+        if (customer != null && passwordEncoder.matches(password, customer.getPassword())) {
+            return customer;
+        }
+        return null;
+    }
+
+    @Override
+    public boolean existsByUsername(String username) {
+        return customerRepository.findByUsername(username) != null;
+    }
+}

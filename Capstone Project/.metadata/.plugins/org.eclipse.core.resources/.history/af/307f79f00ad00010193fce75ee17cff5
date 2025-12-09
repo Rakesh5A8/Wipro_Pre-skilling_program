@@ -1,0 +1,14 @@
+package com.myfinbank.customer.repository;
+
+import java.util.Optional;
+import org.springframework.data.jpa.repository.JpaRepository;
+import com.myfinbank.customer.entity.Customer;
+
+public interface CustomerRepository extends JpaRepository<Customer, Long> {
+
+    // Method to find a Customer by username for login/security
+    Optional<Customer> findByUsername(String username);
+
+    // Method to find a Customer by email for security/uniqueness checks
+    Optional<Customer> findByEmail(String email);
+}

@@ -1,0 +1,129 @@
+package com.myfinbank.customer.controller;
+
+
+import com.myfinbank.customer.entity.Customer;
+import com.myfinbank.customer.service.CustomerService;
+import jakarta.servlet.http.HttpSession;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+
+import java.math.BigDecimal;
+import org.springframework.web.bind.annotation.RequestParam;
+
+@Controller
+@RequiredArgsConstructor
+public class CustomerController {
+
+    private final CustomerService customerService;
+
+    // --------------------- LOGIN (GET) ---------------------
+    @GetMapping("/login")
+    public String showLogin(Model model) {
+        model.addAttribute("customer", new Customer());
+        return "customer/login";
+    }
+
+    // --------------------- LOGIN (POST) ---------------------
+    @PostMapping("/login")
+    public String processLogin(@ModelAttribute("customer") Customer customer,
+                               Model model,
+                               HttpSession session) {
+
+        Customer validCustomer = customerService.validateLogin(
+                customer.getUsername(),
+                customer.getPassword()
+        );
+
+        if (validCustomer == null) {
+            model.addAttribute("error", "Invalid username or password");
+            return "customer/login";
+        }
+
+        // Store username & ID in session
+        session.setAttribute("customerUsername", validCustomer.getUsername());
+        session.setAttribute("customerId", validCustomer.getId());
+
+        return "redirect:/dashboard";
+    }
+
+    // --------------------- REGISTER (GET) ---------------------
+    @GetMapping("/register")
+    public String showRegister(Model model) {
+        model.addAttribute("customer", new Customer());
+        return "customer/register";
+    }
+
+    // --------------------- REGISTER (POST) ---------------------
+    @PostMapping("/register")
+    public String processRegister(@ModelAttribute("customer") Customer customer,
+                                  Model model) {
+
+        if (customerService.existsByUsername(customer.getUsername())) {
+            model.addAttribute("error", "Username is already taken!");
+            return "customer/register";
+        }
+
+        customerService.register(customer);
+        model.addAttribute("success", "Registration successful! Please login.");
+        return "customer/login";
+    }
+
+    // --------------------- DASHBOARD ---------------------
+    @GetMapping("/dashboard")
+    public String dashboard(HttpSession session, Model model) {
+
+        String username = (String) session.getAttribute("customerUsername");
+        if (username == null) {
+            return "redirect:/login";
+        }
+
+        model.addAttribute("username", username);
+        return "customer/dashboard";
+    }
+
+    // --------------------- LOGOUT ---------------------
+    @GetMapping("/logout")
+    public String logout(HttpSession session) {
+        session.invalidate();
+        return "redirect:/login";
+    }
+    
+    @GetMapping("/deposit")
+    public String showDeposit(Model model, HttpSession session) {
+        Long custId = (Long) session.getAttribute("customerId");
+        if (custId == null) return "redirect:/login";
+
+        model.addAttribute("customerId", custId);
+        return "customer/deposit";
+    }
+
+    // Process deposit form
+    @PostMapping("/deposit")
+    public String processDeposit(@RequestParam("amount") String amountStr,
+                                 Model model,
+                                 HttpSession session) {
+
+        Long custId = (Long) session.getAttribute("customerId");
+        if (custId == null) return "redirect:/login";
+
+        try {
+            BigDecimal amount = new BigDecimal(amountStr);
+            customerService.deposit(custId, amount);
+            model.addAttribute("success", "Deposit successful!");
+        } catch (NumberFormatException nfe) {
+            model.addAttribute("error", "Invalid amount format");
+            return "customer/deposit";
+        } catch (IllegalArgumentException iae) {
+            model.addAttribute("error", iae.getMessage());
+            return "customer/deposit";
+        } catch (RuntimeException re) {
+            model.addAttribute("error", re.getMessage());
+            return "customer/deposit";
+        }
+
+        // Show dashboard after deposit (dashboard shows username from session)
+        return "redirect:/dashboard";
+    }
+}

@@ -1,0 +1,5 @@
+package com.myfinbank.customer.config;
+
+public class BeanConfig {
+
+}

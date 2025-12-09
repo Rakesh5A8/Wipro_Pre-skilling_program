@@ -1,0 +1,5 @@
+package com.myfinbank.admin.repository;
+
+public class AdminRepository {
+
+}

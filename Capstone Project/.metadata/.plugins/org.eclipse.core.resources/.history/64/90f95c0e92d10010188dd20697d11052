@@ -1,0 +1,37 @@
+package com.myfinbank.customer.controller;
+
+
+
+import com.myfinbank.customer.entity.Customer;
+import com.myfinbank.customer.security.JwtUtil;
+import com.myfinbank.customer.service.CustomerService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
+
+@RestController
+@RequiredArgsConstructor
+public class JwtController {
+
+    private final JwtUtil jwtUtil;
+    private final CustomerService customerService;
+
+    // REAL TOKEN GENERATOR FOR API, POSTMAN, ADMIN MS
+    @GetMapping("/api/get-token")
+    public ResponseEntity<?> generateToken(
+            @RequestParam String username,
+            @RequestParam String password) {
+
+        Customer c = customerService.validateLogin(username, password);
+
+        if (c == null) {
+            return ResponseEntity.status(401).body("Invalid username or password");
+        }
+
+        String token = jwtUtil.generateToken(username);
+
+        return ResponseEntity.ok(Map.of("token", token));
+    }
+}

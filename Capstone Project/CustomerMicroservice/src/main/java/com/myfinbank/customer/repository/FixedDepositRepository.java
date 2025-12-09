@@ -1,0 +1,12 @@
+package com.myfinbank.customer.repository;
+
+
+
+import com.myfinbank.customer.entity.FixedDeposit;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.List;
+
+public interface FixedDepositRepository extends JpaRepository<FixedDeposit, Long> {
+    List<FixedDeposit> findByCustomerId(Long customerId);
+}

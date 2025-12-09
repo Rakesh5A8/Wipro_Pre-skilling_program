@@ -1,0 +1,62 @@
+package com.myfinbank.customer.service;
+
+import com.myfinbank.customer.entity.Customer;
+import com.myfinbank.customer.repository.CustomerRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+@Service
+public class CustomerService {
+
+    @Autowired
+    private CustomerRepository customerRepository;
+
+    // Simple state management (to be replaced by Spring Security in later sprints)
+    private String loggedInCustomer = null;
+
+    /**
+     * Registers a new customer after checking for username/email uniqueness.
+     */
+    public Customer registerCustomer(Customer customer) {
+        if (customerRepository.findByUsername(customer.getUsername()).isPresent()) {
+            throw new IllegalArgumentException("Username already exists.");
+        }
+        if (customerRepository.findByEmail(customer.getEmail()).isPresent()) {
+            throw new IllegalArgumentException("Email already associated with an account.");
+        }
+        
+        // Save the new customer
+        return customerRepository.save(customer);
+    }
+
+    /**
+     * Attempts to log in a customer.
+     */
+    public Customer loginCustomer(String username, String password) {
+        Customer customer = customerRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Invalid username or password."));
+
+        // Simple password check (NOT secure, will be fixed with hashing in Sprint 2)
+        if (!customer.getPassword().equals(password)) {
+            throw new RuntimeException("Invalid username or password.");
+        }
+
+        // Set logged in user state
+        this.loggedInCustomer = username;
+        return customer;
+    }
+
+    /**
+     * Clears the current logged-in state.
+     */
+    public void logoutCustomer() {
+        this.loggedInCustomer = null;
+    }
+
+    /**
+     * Returns the username of the currently "logged in" customer for UI purposes.
+     */
+    public String getLoggedInCustomer() {
+        return this.loggedInCustomer;
+    }
+}

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Customer Registration - MyFinBank</title>
+    <style>
+        body { font-family: Arial; background:#f4f4f4;
+               display:flex; justify-content:center; align-items:center;
+               height:100vh; margin:0; }
+        .container {
+            width:450px; background:white; padding:30px;
+            border-radius:10px;
+            border-top:5px solid #28a745;
+            box-shadow:0 4px 10px rgba(0,0,0,0.1);
+            text-align:center;
+        }
+        input { width:100%; padding:10px; margin-bottom:10px;
+                border:1px solid #ccc; border-radius:4px; }
+        label { text-align:left; display:block; margin-bottom:5px; }
+        button { background:#28a745; padding:12px; width:100%;
+                 color:white; border:none; border-radius:4px; cursor:pointer; }
+        button:hover { background:#1e7e34; }
+		footer {
+            margin-top: 25px;
+            font-size: 14px;
+            color: #333;}
+
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>Create Your Account</h2>
+
+    <form method="post" th:action="@{/register}" th:object="${customer}">
+        <label>First Name</label>
+        <input type="text" th:field="*{firstName}" required>
+
+        <label>Last Name</label>
+        <input type="text" th:field="*{lastName}" required>
+
+        <label>Username</label>
+        <input type="text" th:field="*{username}" required>
+
+        <label>Email</label>
+        <input type="email" th:field="*{email}" required>
+
+        <label>Password</label>
+        <input type="password" th:field="*{password}" required>
+
+        <button type="submit">Register</button>
+    </form>
+
+    <p>Already registered? <a th:href="@{/login}">Login</a></p>
+</div>
+<footer>
+    <p>&copy; 2025 MyFinBank — All Rights Reserved</p>
+</footer>
+</body>
+</html>

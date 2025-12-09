@@ -1,0 +1,5 @@
+package com.myfinbank.customer.security;
+
+public class JwtUtil {
+
+}

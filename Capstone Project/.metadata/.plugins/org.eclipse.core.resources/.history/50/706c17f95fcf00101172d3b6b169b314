@@ -1,0 +1,47 @@
+package com.myfinbank.admin.service;
+
+import com.myfinbank.admin.entity.Admin;
+import com.myfinbank.admin.repository.AdminRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+@Service
+public class AdminService {
+
+    @Autowired
+    private AdminRepository adminRepository;
+    
+    // Simple state management for Sprint I without Spring Security
+    private String loggedInAdmin = null;
+
+    public Admin registerAdmin(Admin admin) {
+        if (adminRepository.findByUsername(admin.getUsername()).isPresent()) {
+            throw new IllegalArgumentException("Admin username already exists.");
+        }
+        return adminRepository.save(admin);
+    }
+
+    public Admin loginAdmin(String username, String password) {
+        Admin admin = adminRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Invalid username or password."));
+
+        if (!admin.getPassword().equals(password)) {
+            throw new RuntimeException("Invalid username or password.");
+        }
+        
+        // Set logged in user state
+        this.loggedInAdmin = username;
+        return admin;
+    }
+    
+    public void logoutAdmin() {
+        this.loggedInAdmin = null;
+    }
+    
+    /**
+     * Returns the username of the currently "logged in" admin for UI purposes.
+     */
+    public String getLoggedInAdmin() {
+        return this.loggedInAdmin;
+    }
+}

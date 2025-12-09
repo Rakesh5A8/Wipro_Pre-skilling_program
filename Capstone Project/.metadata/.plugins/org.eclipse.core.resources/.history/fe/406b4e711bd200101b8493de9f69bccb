@@ -1,0 +1,14 @@
+package com.myfinbank.admin.feign;
+
+
+import com.myfinbank.admin.dto.CustomerDto;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.GetMapping;
+import java.util.List;
+
+@FeignClient(name = "CUSTOMER-MICROSERVICE")  // 🔥 Eureka service name
+public interface CustomerClient {
+
+    @GetMapping("/api/customers")   // 🔥 Must exist in CustomerMicroservice
+    List<CustomerDto> getAllCustomers();
+}

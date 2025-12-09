@@ -1,0 +1,167 @@
+package com.myfinbank.customer.service;
+
+
+import com.myfinbank.customer.entity.Customer;
+import com.myfinbank.customer.entity.Transaction;
+import com.myfinbank.customer.repository.CustomerRepository;
+import com.myfinbank.customer.repository.TransactionRepository;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import jakarta.transaction.Transactional;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.UUID;
+
+@Service
+@RequiredArgsConstructor
+public class CustomerServiceImpl implements CustomerService {
+
+    private final CustomerRepository customerRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final TransactionRepository transactionRepository;
+
+    // ===========================
+    // Sprint-1 Methods
+    // ===========================
+
+    @Override
+    public Customer register(Customer customer) {
+        customer.setPassword(passwordEncoder.encode(customer.getPassword()));
+        return customerRepository.save(customer);
+    }
+
+    @Override
+    public Customer validateLogin(String username, String rawPassword) {
+        Customer customer = customerRepository.findByUsername(username);
+        if (customer != null && passwordEncoder.matches(rawPassword, customer.getPassword())) {
+            return customer;
+        }
+        return null;
+    }
+
+    @Override
+    public boolean existsByUsername(String username) {
+        return customerRepository.existsByUsername(username);
+    }
+
+    // ===========================
+    // Sprint-2 Methods
+    // ===========================
+
+    @Override
+    @Transactional
+    public String depositAndReturnTxn(Long customerId, BigDecimal amount, String description) {
+
+        if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("Amount must be > 0");
+        }
+
+        Customer customer = customerRepository.findById(customerId)
+                .orElseThrow(() -> new RuntimeException("Customer not found"));
+
+        customer.setBalance(customer.getBalance().add(amount));
+        customerRepository.save(customer);
+
+        String txnId = UUID.randomUUID().toString();
+
+        Transaction txn = Transaction.builder()
+                .transactionId(txnId)
+                .fromCustomerId(null)
+                .toCustomerId(customerId)
+                .amount(amount)
+                .type("DEPOSIT")
+                .description(description)
+                .createdAt(LocalDateTime.now())
+                .build();
+
+        transactionRepository.save(txn);
+
+        return txnId;
+    }
+
+    @Override
+    @Transactional
+    public String withdrawAndReturnTxn(Long customerId, BigDecimal amount, String description) {
+
+        if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("Amount must be > 0");
+        }
+
+        Customer customer = customerRepository.findById(customerId)
+                .orElseThrow(() -> new RuntimeException("Customer not found"));
+
+        if (customer.getBalance().compareTo(amount) < 0) {
+            throw new IllegalArgumentException("Insufficient balance");
+        }
+
+        customer.setBalance(customer.getBalance().subtract(amount));
+        customerRepository.save(customer);
+
+        String txnId = UUID.randomUUID().toString();
+
+        Transaction txn = Transaction.builder()
+                .transactionId(txnId)
+                .fromCustomerId(customerId)
+                .toCustomerId(null)
+                .amount(amount)
+                .type("WITHDRAW")
+                .description(description)
+                .createdAt(LocalDateTime.now())
+                .build();
+
+        transactionRepository.save(txn);
+
+        return txnId;
+    }
+
+
+    @Override
+    @Transactional
+    public String transferAndReturnTxn(Long fromCustomerId, Long toCustomerId, BigDecimal amount, String description) {
+
+        if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("Amount must be > 0");
+        }
+
+        if (fromCustomerId.equals(toCustomerId)) {
+            throw new IllegalArgumentException("Cannot transfer to self");
+        }
+
+        Customer sender = customerRepository.findById(fromCustomerId)
+                .orElseThrow(() -> new RuntimeException("Sender not found"));
+
+        Customer receiver = customerRepository.findById(toCustomerId)
+                .orElseThrow(() -> new RuntimeException("Receiver not found"));
+
+        if (sender.getBalance().compareTo(amount) < 0) {
+            throw new IllegalArgumentException("Insufficient funds");
+        }
+
+        // Update balances
+        sender.setBalance(sender.getBalance().subtract(amount));
+        receiver.setBalance(receiver.getBalance().add(amount));
+
+        customerRepository.save(sender);
+        customerRepository.save(receiver);
+
+        String txnId = UUID.randomUUID().toString();
+
+        Transaction txn = Transaction.builder()
+                .transactionId(txnId)
+                .fromCustomerId(fromCustomerId)
+                .toCustomerId(toCustomerId)
+                .amount(amount)
+                .type("TRANSFER")
+                .description(description)
+                .createdAt(LocalDateTime.now())
+                .build();
+
+        transactionRepository.save(txn);
+
+        return txnId;
+    }
+}

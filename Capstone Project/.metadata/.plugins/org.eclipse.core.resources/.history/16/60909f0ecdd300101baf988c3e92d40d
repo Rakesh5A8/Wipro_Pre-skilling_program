@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+
+<title>Admin Registration - MyFinBank</title>
+<style>
+    body { font-family: Arial, sans-serif; background:#e6e6fa;
+           display:flex; justify-content:center; align-items:center;
+           height:100vh; margin:0; }
+    .container {
+        background:white; padding:30px; border-radius:10px; width:350px;
+        border-top:5px solid #6f42c1; box-shadow:0 4px 12px rgba(0,0,0,0.1);
+        text-align:center;
+    }
+    input { width:100%; padding:12px; margin-bottom:15px; border-radius:6px; border:1px solid #ccc; }
+    button { width:100%; padding:12px; background:#6f42c1; color:white; border:none; border-radius:6px; cursor:pointer; font-size:16px; }
+    button:hover { background:#583393; }
+    .error { background:#f8d7da; color:#721c24; padding:10px; border-radius:5px; }
+    a { color:#6f42c1; }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Admin Registration</h2>
+
+    <div th:if="${error}" class="error" th:text="${error}"></div>
+
+    <form method="post" th:action="@{/admin/register}" th:object="${admin}">
+        <input type="text" th:field="*{username}" placeholder="Username" required>
+        <input type="email" th:field="*{email}" placeholder="Email" required>
+        <input type="password" th:field="*{password}" placeholder="Password" required>
+        <button type="submit">Register</button>
+    </form>
+
+    <p>Already have an account? <a th:href="@{/admin/login}">Login</a></p>
+</div>
+
+<<footer>
+    <p>&copy; 2025 MyFinBank — All Rights Reserved</p>
+</footer>
+
+
+</body>
+</html>

@@ -1,0 +1,5 @@
+package com.myfinbank.customer.repository;
+
+public class CustomerRepository {
+
+}

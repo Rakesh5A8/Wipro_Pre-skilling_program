@@ -1,0 +1,5 @@
+package com.myfinbank.admin.feign;
+
+public class LoanClient {
+
+}

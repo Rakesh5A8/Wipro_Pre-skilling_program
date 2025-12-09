@@ -1,0 +1,11 @@
+package com.myfinbank.customer.service;
+
+import com.myfinbank.customer.entity.Customer;
+
+public interface CustomerService {
+	void register(Customer customer);
+
+    Customer validateLogin(String username, String password);
+
+    boolean existsByUsername(String username);
+}

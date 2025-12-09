@@ -1,0 +1,5 @@
+package com.myfinbank.admin.entity;
+
+public class Admin {
+
+}

@@ -1,0 +1,55 @@
+package com.myfinbank.customer.security;
+
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+@Configuration
+@RequiredArgsConstructor
+public class SecurityConfig {
+
+    private final JwtAuthFilter jwtAuthFilter;
+
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+
+        http.csrf(csrf -> csrf.disable());
+
+        http.authorizeHttpRequests(auth -> auth
+                // Public endpoints (NO JWT required)
+                .requestMatchers(
+                        "/login",
+                        "/register",
+                        "/api/get-token",
+                        "/",
+                        "/css/**",
+                        "/js/**",
+                        "/images/**"
+                ).permitAll()
+
+                // Session-based UI is STILL allowed
+                .requestMatchers(
+                        "/dashboard",
+                        "/deposit",
+                        "/withdraw",
+                        "/transfer",
+                        "/apply-loan/**"
+                ).permitAll()
+
+                // Any API EXCEPT /api/get-token requires JWT
+                .requestMatchers("/api/**").authenticated()
+
+                // all others require auth
+                .anyRequest().authenticated()
+        );
+
+        // Add JWT filter BEFORE UsernamePasswordAuthentication
+        http.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+
+        return http.build();
+    }
+}

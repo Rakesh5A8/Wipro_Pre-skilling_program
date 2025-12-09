@@ -1,0 +1,5 @@
+package com.myfinbank.customer.service;
+
+public class LoanServiceImpl {
+
+}

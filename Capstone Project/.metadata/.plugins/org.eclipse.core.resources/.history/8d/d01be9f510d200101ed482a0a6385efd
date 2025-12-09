@@ -1,0 +1,54 @@
+package com.myfinbank.customer.security;
+
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+@Configuration
+@RequiredArgsConstructor
+public class SecurityConfig {
+
+    private final JwtAuthFilter jwtAuthFilter;
+
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+
+        http.csrf(csrf -> csrf.disable());
+
+        http.authorizeHttpRequests(auth -> auth
+
+                // ---- LOGIN + REGISTER ----
+                .requestMatchers("/login", "/auth/login", "/register", "/logout").permitAll()
+
+                // ---- STATIC ASSETS ----
+                .requestMatchers("/css/**", "/js/**", "/images/**").permitAll()
+
+                // ---- UI PAGES (session-based) ----
+                .requestMatchers("/dashboard",
+                                 "/deposit",
+                                 "/withdraw",
+                                 "/transfer",
+                                 "/apply-loan",
+                                 "/calculate-emi",
+                                 "/get-token",
+                                 "/loan/**").permitAll()
+
+                // ---- PUBLIC JWT TOKEN ENDPOINT ----
+                .requestMatchers("/api/auth/token").permitAll()
+
+                // ---- PROTECTED APIs : Admin, Microservices ----
+                .requestMatchers("/api/**").authenticated()
+
+                .anyRequest().permitAll()
+        );
+
+        // ---- APPLY JWT FILTER ONLY FOR /api/** ----
+        http.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+
+        return http.build();
+    }
+}

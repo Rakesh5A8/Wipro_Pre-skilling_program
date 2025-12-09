@@ -1,0 +1,38 @@
+package com.myfinbank.admin.controller;
+
+import com.myfinbank.admin.entity.Admin;
+import com.myfinbank.admin.repository.AdminRepository;
+import com.myfinbank.admin.security.AdminJwtUtil;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/api/admin/auth")
+@RequiredArgsConstructor
+public class AdminAuthController {
+
+    private final AdminRepository adminRepository;
+    private final AdminJwtUtil adminJwtUtil;
+    private final PasswordEncoder passwordEncoder;
+
+    /**
+     * Returns a JWT for an admin (used by Postman / other microservices).
+     * Example: POST /api/admin/auth/token  (form or query params)
+     */
+    @PostMapping("/token")
+    public String getToken(@RequestParam String username,
+                           @RequestParam String password) {
+
+        Admin admin = adminRepository.findByUsername(username);
+        if (admin == null) {
+            return "Invalid username or password";
+        }
+
+        if (!passwordEncoder.matches(password, admin.getPassword())) {
+            return "Invalid username or password";
+        }
+
+        return adminJwtUtil.generateToken(username);
+    }
+}

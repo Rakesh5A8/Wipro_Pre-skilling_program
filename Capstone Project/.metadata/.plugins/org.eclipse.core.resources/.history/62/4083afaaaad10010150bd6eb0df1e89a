@@ -1,0 +1,37 @@
+package com.myfinbank.customer.controller;
+
+
+import com.myfinbank.customer.entity.Customer;
+import com.myfinbank.customer.repository.CustomerRepository;
+import com.myfinbank.customer.security.JwtUtil;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/api")
+@RequiredArgsConstructor
+public class AuthController {
+
+    private final CustomerRepository customerRepository;
+    private final JwtUtil jwtUtil;
+    private final PasswordEncoder passwordEncoder;
+
+    @GetMapping("/get-token")
+    public String getToken(@RequestParam String username,
+                           @RequestParam String password) {
+
+        Customer customer = customerRepository.findByUsername(username);
+        if (customer == null) {
+            return "Invalid username or password";
+        }
+
+        // IMPORTANT: BCrypt match function
+        if (!passwordEncoder.matches(password, customer.getPassword())) {
+            return "Invalid username or password";
+        }
+
+        return jwtUtil.generateToken(username);
+    }
+}
+

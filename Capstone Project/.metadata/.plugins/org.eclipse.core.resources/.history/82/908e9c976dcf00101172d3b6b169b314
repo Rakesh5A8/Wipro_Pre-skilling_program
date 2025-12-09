@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Admin Registration - MyFinBank</title>
+</head>
+<body>
+	<div class="container">
+        <h1>Admin Registration</h1>
+
+        <!-- Error Message Display -->
+        <div th:if="${error}" class="message error" th:text="${error}">Registration Error Message</div>
+
+        <form method="POST" th:action="@{/admin/register}" th:object="${admin}">
+            <input type="text" th:field="*{username}" placeholder="Admin Username" required>
+            <input type="password" th:field="*{password}" placeholder="Password" required>
+            <input type="email" th:field="*{email}" placeholder="Email" required>
+            <button type="submit">Register Admin</button>
+        </form>
+
+        <div class="link-text">
+            Already registered? <a th:href="@{/admin/login}">Log in here</a>
+        </div>
+    </div>
+
+</body>
+</html>

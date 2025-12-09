@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Customer Dashboard - MyFinBank</title>
+<style>
+    body { font-family: Arial; background:#eef2f3; margin:0; }
+    .navbar {
+        background:#0056b3; padding:15px; color:white;
+        display:flex; justify-content:space-between; align-items:center;
+    }
+    .content { padding:20px; }
+    button {
+        padding:8px 14px; background:#d9534f; color:white;
+        border:none; border-radius:6px; cursor:pointer;
+    }
+    button:hover { background:#c9302c; }
+</style>
+
+</head>
+<body>
+
+<div class="navbar">
+    <div>Customer Portal</div>
+    <div>
+        Welcome, <span id="userDisplay"></span>
+        <button onclick="logout()">Logout</button>
+    </div>
+</div>
+
+<div class="content">
+    <h2>Dashboard</h2>
+
+    <p>Your financial services are available using the menu below.</p>
+
+    <ul>
+        <li><a href="/deposit">Deposit Money</a></li>
+        <li><a href="/withdraw">Withdraw Money</a></li>
+        <li><a href="/transfer">Transfer Money</a></li>
+        <li><a href="/apply-loan">Apply for Loan</a></li>
+        <li><a href="/calculate-emi">Calculate EMI</a></li>
+        <li><a href="/transfer-investment">Transfer to Loan / FD / RD</a></li>
+    </ul>
+</div>
+
+<script>
+// Load username
+document.getElementById("userDisplay").innerText =
+    sessionStorage.getItem("username");
+
+// Just to visually confirm token is stored
+console.log("JWT Token:", sessionStorage.getItem("jwt"));
+
+function logout() {
+    sessionStorage.clear();
+    window.location.href = "/login?logout";
+}
+</script>
+
+</body>
+</html>

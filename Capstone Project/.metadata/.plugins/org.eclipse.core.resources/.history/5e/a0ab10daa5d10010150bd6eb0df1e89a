@@ -1,0 +1,269 @@
+package com.myfinbank.customer.controller;
+
+
+import java.math.BigDecimal;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import com.myfinbank.customer.entity.Customer;
+import com.myfinbank.customer.entity.Loan;
+import com.myfinbank.customer.security.JwtUtil;
+import com.myfinbank.customer.service.CustomerService;
+import com.myfinbank.customer.service.LoanService;
+
+import jakarta.servlet.http.HttpSession;
+import lombok.RequiredArgsConstructor;
+
+@Controller
+@RequiredArgsConstructor
+public class CustomerController {
+
+    private final CustomerService customerService;
+    private final LoanService loanService;
+    
+    private final JwtUtil jwtUtil;
+
+    // ----- LOGIN GET -----
+    @GetMapping("/login")
+    public String showLogin(@RequestParam(value = "logout", required = false) String logout,
+                            Model model) {
+        model.addAttribute("customer", new Customer());
+
+        if (logout != null) {
+            model.addAttribute("logoutMsg", "You have been logged out successfully!");
+        }
+
+        return "customer/login";
+    }
+
+    }
+
+    // ----- LOGIN POST -----
+    @PostMapping("/login")
+    public String processLogin(@ModelAttribute("customer") Customer customer,
+                               Model model,
+                               HttpSession session) {
+
+        Customer validCustomer = customerService.validateLogin(
+                customer.getUsername(),
+                customer.getPassword()
+        );
+
+        if (validCustomer == null) {
+            model.addAttribute("error", "Invalid username or password");
+            return "customer/login";
+        }
+
+        // store username & id in session
+        session.setAttribute("customerUsername", validCustomer.getUsername());
+        session.setAttribute("customerId", validCustomer.getId());
+
+        // NEW — generate JWT token
+        String token = jwtUtil.generateToken(validCustomer.getUsername());
+        session.setAttribute("jwtToken", token);
+
+        return "redirect:/dashboard";
+    }
+
+
+    // ----- REGISTER GET -----
+    @GetMapping("/register")
+    public String showRegister(Model model) {
+        model.addAttribute("customer", new Customer());
+        return "customer/register";
+    }
+
+    // ----- REGISTER POST -----
+    @PostMapping("/register")
+    public String processRegister(@ModelAttribute("customer") Customer customer, Model model) {
+        if (customerService.existsByUsername(customer.getUsername())) {
+            model.addAttribute("error", "Username already exists");
+            return "customer/register";
+        }
+        customerService.register(customer);
+        model.addAttribute("success", "Registration successful. Please login.");
+        return "customer/login";
+    }
+
+    // ----- DASHBOARD -----
+    @GetMapping("/dashboard")
+    public String dashboard(HttpSession session, Model model) {
+        String username = (String) session.getAttribute("customerUsername");
+        Long custId = (Long) session.getAttribute("customerId");
+        if (username == null || custId == null) return "redirect:/login";
+
+        Customer c = customerService.findById(custId);
+        model.addAttribute("username", username);
+        model.addAttribute("customerBalance", c.getBalance());
+        return "customer/dashboard";
+    }
+
+    // ----- LOGOUT -----
+    @GetMapping("/logout")
+    public String logout(HttpSession session) {
+        session.invalidate();
+        return "redirect:/login?logout";
+    }
+
+    // ----- DEPOSIT GET -----
+    @GetMapping("/deposit")
+    public String showDeposit(HttpSession session, Model model) {
+        if (session.getAttribute("customerId") == null) return "redirect:/login";
+        return "customer/deposit";
+    }
+
+    // ----- DEPOSIT POST -----
+    @PostMapping("/deposit")
+    public String processDeposit(@RequestParam("amount") String amountStr,
+                                 HttpSession session,
+                                 RedirectAttributes redirect) {
+
+        Long custId = (Long) session.getAttribute("customerId");
+        if (custId == null) return "redirect:/login";
+
+        try {
+            BigDecimal amount = new BigDecimal(amountStr);
+            customerService.deposit(custId, amount);
+
+            redirect.addFlashAttribute("success", "Deposit successful!");
+            return "redirect:/dashboard";
+        } catch (Exception e) {
+            redirect.addFlashAttribute("error", e.getMessage());
+            return "redirect:/deposit";
+        }
+    }
+
+    // ----- WITHDRAW GET -----
+    @GetMapping("/withdraw")
+    public String showWithdraw(HttpSession session) {
+        if (session.getAttribute("customerId") == null) return "redirect:/login";
+        return "customer/withdraw";
+    }
+
+    // ----- WITHDRAW POST -----
+    @PostMapping("/withdraw")
+    public String processWithdraw(@RequestParam("amount") String amountStr,
+                                  HttpSession session,
+                                  RedirectAttributes redirect) {
+
+        Long custId = (Long) session.getAttribute("customerId");
+        if (custId == null) return "redirect:/login";
+
+        try {
+            BigDecimal amount = new BigDecimal(amountStr);
+            customerService.withdraw(custId, amount);
+            redirect.addFlashAttribute("success", "Withdrawal successful!");
+            return "redirect:/dashboard";
+        } catch (Exception e) {
+            redirect.addFlashAttribute("error", e.getMessage());
+            return "redirect:/withdraw";
+        }
+    }
+
+    // ----- TRANSFER GET -----
+    @GetMapping("/transfer")
+    public String showTransfer(HttpSession session) {
+        if (session.getAttribute("customerUsername") == null) return "redirect:/login";
+        return "customer/transfer";
+    }
+
+    // ----- TRANSFER POST -----
+    @PostMapping("/transfer")
+    public String processTransfer(@RequestParam String receiverUsername,
+                                  @RequestParam String amount,
+                                  HttpSession session,
+                                  Model model) {
+
+        String senderUsername = (String) session.getAttribute("customerUsername");
+        if (senderUsername == null) return "redirect:/login";
+
+        try {
+            BigDecimal amt = new BigDecimal(amount);
+            boolean ok = customerService.transferAmount(senderUsername, receiverUsername, amt);
+            if (!ok) {
+                model.addAttribute("error", "Transfer failed: check receiver or balance.");
+                return "customer/transfer";
+            }
+
+            // temporary transaction id shown to user (Sprint-3 will store it)
+            String txnId = "TXN" + System.currentTimeMillis();
+            model.addAttribute("success", "Transfer successful! Transaction ID: " + txnId);
+            return "customer/transfer";
+        } catch (NumberFormatException nfe) {
+            model.addAttribute("error", "Invalid amount format");
+            return "customer/transfer";
+        }
+    }
+
+    // ----- APPLY LOAN GET -----
+    @GetMapping("/apply-loan")
+    public String showApplyLoan(HttpSession session, Model model) {
+        if (session.getAttribute("customerId") == null) return "redirect:/login";
+        return "customer/apply-loan";
+    }
+
+    // ----- APPLY LOAN POST -----
+    @PostMapping("/apply-loan")
+    public String processApplyLoan(@RequestParam String loanType,
+                                   @RequestParam String amount,
+                                   @RequestParam String annualRate,
+                                   @RequestParam String months,
+                                   HttpSession session,
+                                   Model model) {
+
+        Long custId = (Long) session.getAttribute("customerId");
+        if (custId == null) return "redirect:/login";
+
+        try {
+            BigDecimal amt = new BigDecimal(amount);
+            Double rate = Double.parseDouble(annualRate);
+            Integer m = Integer.parseInt(months);
+
+            Loan loan = loanService.applyLoan(custId, loanType, amt, rate, m);
+            model.addAttribute("success", "Loan applied. EMI: " + loan.getEmi());
+            return "customer/apply-loan";
+        } catch (Exception e) {
+            model.addAttribute("error", e.getMessage());
+            return "customer/apply-loan";
+        }
+    }
+
+    // ----- EMI CALCULATOR (simple GET & POST) -----
+    @GetMapping("/calculate-emi")
+    public String showEmiCalculator() {
+        return "customer/calculate-emi";
+    }
+
+    @PostMapping("/calculate-emi")
+    public String calculateEmi(@RequestParam String amount,
+                               @RequestParam String rate,
+                               @RequestParam String months,
+                               Model model) {
+        try {
+            BigDecimal amt = new BigDecimal(amount);
+            Double r = Double.parseDouble(rate);
+            Integer m = Integer.parseInt(months);
+            BigDecimal emi = loanService.calculateEmi(amt, r, m);
+            model.addAttribute("emi", emi);
+            return "customer/calculate-emi";
+        } catch (Exception e) {
+            model.addAttribute("error", "Invalid input");
+            return "customer/calculate-emi";
+        }
+    }
+    
+    
+    @GetMapping("/get-token")
+    @ResponseBody
+    public String getTokenFromSession(HttpSession session) {
+        Object t = session.getAttribute("jwtToken");
+        return t != null ? t.toString() : null;
+    }
+}

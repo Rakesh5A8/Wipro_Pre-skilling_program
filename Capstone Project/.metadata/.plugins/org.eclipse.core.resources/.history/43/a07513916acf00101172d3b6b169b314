@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Admin Dashboard - MyFinBank</title>
+</head>
+<body>
+	<div class="dashboard">
+        <h1>Admin Portal</h1>
+        <p>Welcome back, <span th:text="${username}">Admin!</span></p>
+        
+        <div class="btn-group">
+            <a href="#">Manage Customers</a>
+            <a href="#">Process Loans</a>
+        </div>
+        
+        <a th:href="@{/admin/logout}" class="btn-group logout-btn">Logout</a>
+        
+    </div>
+
+</body>
+</html>

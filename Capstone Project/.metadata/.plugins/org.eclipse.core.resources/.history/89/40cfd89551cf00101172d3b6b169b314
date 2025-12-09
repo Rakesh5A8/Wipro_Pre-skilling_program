@@ -1,0 +1,34 @@
+package com.myfinbank.admin.service;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import com.myfinbank.admin.entity.Admin;
+import com.myfinbank.admin.repository.AdminRepository;
+
+@Service
+public class AdminService {
+
+    @Autowired
+    private AdminRepository adminRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    // --- C: Register/Create Admin ---
+    
+    public Admin registerAdmin(Admin admin) {
+        if (adminRepository.findByUsername(admin.getUsername()).isPresent() || 
+            adminRepository.findByEmail(admin.getEmail()).isPresent()) {
+            throw new RuntimeException("Username or Email already exists.");
+        }
+        
+        // 2. Hash the password before saving (SECURITY REQUIREMENT)
+        admin.setPassword(passwordEncoder.encode(admin.getPassword()));
+        
+        // 3. Save the new admin
+        return adminRepository.save(admin);
+    }
+    
+}

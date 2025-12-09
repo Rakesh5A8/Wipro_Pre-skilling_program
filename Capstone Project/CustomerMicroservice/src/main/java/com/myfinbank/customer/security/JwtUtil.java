@@ -1,0 +1,48 @@
+package com.myfinbank.customer.security;
+
+
+
+import io.jsonwebtoken.Jwts;
+import org.springframework.stereotype.Component;
+
+import java.util.Date;
+
+import io.jsonwebtoken.security.Keys;
+import javax.crypto.SecretKey;
+
+@Component
+public class JwtUtil {
+
+    private final String secret = "myfinbanksecretkey123myfinbanksecretkey123"; 
+    
+
+    private final SecretKey key = Keys.hmacShaKeyFor(secret.getBytes());
+
+    private final long expiration = 1000 * 60 * 60 * 10; // 10 hours
+
+    public String generateToken(String username) {
+        return Jwts.builder()
+                .setSubject(username)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + expiration))
+                .signWith(key)  
+                .compact();
+    }
+    
+    public void validateToken(String token) {
+        Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token);
+    }
+    public String getUsernameFromToken(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .getSubject();
+    }
+
+
+}
